@@ -94,3 +94,34 @@ def predict_energy(target_date,
     is_anomaly = error > ae_threshold
 
     return pred_kwh, is_anomaly
+
+
+def predict_next_7_days(start_date,
+                        input_kwh_lag1,
+                        input_temp,
+                        is_holiday_input):
+
+    predictions = []
+
+    current_date = start_date
+    current_lag1 = input_kwh_lag1
+
+    for i in range(7):
+
+        pred_kwh, _ = predict_energy(
+            current_date,
+            current_lag1,
+            input_temp,
+            is_holiday_input
+        )
+
+        predictions.append({
+            "date": current_date,
+            "prediction": round(pred_kwh, 2)
+        })
+
+        # 下一天準備
+        current_lag1 = pred_kwh
+        current_date = current_date + pd.Timedelta(days=1)
+
+    return predictions

@@ -2,8 +2,7 @@ from django.shortcuts import render
 
 from datetime import datetime
 
-from .model_service import predict_energy
-
+from .model_service import predict_energy, predict_next_7_days
 
 def index(request):
 
@@ -21,7 +20,7 @@ def index(request):
         # ===== 轉換日期 =====
         target_date = datetime.strptime(date_str, "%Y-%m-%d")
 
-        # ===== 呼叫預測模型 =====
+        # ===== 呼叫單日預測 =====
         pred_kwh, is_anomaly = predict_energy(
             target_date,
             lag1,
@@ -29,9 +28,18 @@ def index(request):
             is_holiday
         )
 
+        # ===== 呼叫七日預測 =====
+        weekly_predictions = predict_next_7_days(
+            target_date,
+            lag1,
+            temp,
+            is_holiday
+        )
+
         result = {
-            "prediction": round(pred_kwh, 2),
-            "is_anomaly": is_anomaly
+            "next_day": round(pred_kwh, 2),
+            "is_anomaly": is_anomaly,
+            "next_week": weekly_predictions
         }
 
     return render(request, "predictor/index.html", {"result": result})
