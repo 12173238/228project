@@ -2,62 +2,44 @@
 
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>用電預測系統</title>
+    <title>校園電力預測系統</title>
 </head>
-
 <body>
 
-    <h2>校園電力預測系統</h2>
+<h2>校園電力預測系統</h2>
 
-    <form method="POST">
-        {% csrf_token %}
+<form method="POST">
+    {% csrf_token %}
 
-        <p>預測日期：</p>
-        <input type="date" name="date" required>
+    <p>預測日期（未來五天內）：</p>
+    <input type="date" name="date" required>
 
-        <p>前一天用電量 (kWh)：</p>
-        <input type="number" step="any" name="lag1" required>
+    <p>
+        是否放假：
+        <input type="checkbox" name="is_holiday">
+    </p>
 
-        <p>溫度：</p>
-        <input type="number" step="any" name="temp" required>
+    <p>
+        是否寒暑假：
+        <input type="checkbox" name="is_vacation">
+    </p>
 
-        <p>
-            是否放假：
-            <input type="checkbox" name="is_holiday">
-        </p>
+    <br>
+    <button type="submit">開始預測</button>
+</form>
 
-        <br>
-        <button type="submit">開始預測</button>
-    </form>
+<hr>
+{% if result %}
+<h3>目標日期：{{ result.target_date }} 的預測用電量: {{ result.pred_kwh }} kWh</h3>
 
-    <hr>
+<h3>歷史最近七天用電量</h3>
+<ul>
+    {% for row in result.last_7_days %}
+    <li>{{ row.date }}: {{ row.kwh }} kWh</li>
+    {% endfor %}
+</ul>
+{% endif %}
 
-    {% if result %}
-
-    <h3>未來一天預測</h3>
-    <p>預測用電量： {{ result.next_day }} kWh</p>
-
-    {% if result.is_anomaly %}
-    <p style="color:red;">⚠️ 異常用電</p>
-    {% else %}
-    <p style="color:green;">✅ 正常用電</p>
-    {% endif %}
-
-    <hr>
-
-    <h3>未來七天預測</h3>
-
-    <ul>
-        {% for item in result.next_week %}
-        <li>
-            {{ item.date }} ： {{ item.prediction }} kWh
-        </li>
-        {% endfor %}
-    </ul>
-
-    {% endif %}
 </body>
-
 </html>

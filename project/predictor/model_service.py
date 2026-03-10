@@ -27,10 +27,10 @@ history_df["date"] = pd.to_datetime(history_df["date"])
 # 預測核心函數
 # ===============================
 
-def predict_energy(target_date,
-                   input_kwh_lag1,
-                   input_temp,
-                   is_holiday_input):
+def predict_energy(target_date, input_kwh_lag1,
+                    input_temp, is_holiday_input, 
+                    is_vacation_input):
+    ...
 
     global model, autoencoder, scaler, history_df
 
@@ -40,7 +40,7 @@ def predict_energy(target_date,
 
     # 假日欄位
     is_holiday = 1 if is_holiday_input else 0
-    is_vacation = 0
+    is_vacation = 1 if is_vacation_input else 0
 
     # ---------- lag7 查歷史 ----------
     lag7_date = target_date - pd.Timedelta(days=7)
