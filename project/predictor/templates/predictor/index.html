@@ -2,44 +2,56 @@
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>校園電力預測系統</title>
 </head>
+
 <body>
 
-<h2>校園電力預測系統</h2>
+    <h2>校園電力預測系統</h2>
 
-<form method="POST">
-    {% csrf_token %}
+    <form method="POST">
+        {% csrf_token %}
 
-    <p>預測日期（未來五天內）：</p>
-    <input type="date" name="date" required>
+        <p>預測日期（未來五天內）：</p>
+        <input type="date" name="date" required>
 
-    <p>
-        是否放假：
-        <input type="checkbox" name="is_holiday">
-    </p>
+        <p>
+            是否放假(不包括寒暑假、周六、周日)：
+            <input type="checkbox" name="is_holiday">
+        </p>
 
-    <p>
-        是否寒暑假：
-        <input type="checkbox" name="is_vacation">
-    </p>
+        <p>
+            是否寒暑假：
+            <input type="checkbox" name="is_vacation">
+        </p>
 
-    <br>
-    <button type="submit">開始預測</button>
-</form>
+        <br>
+        <button type="submit">開始預測</button>
+    </form>
 
-<hr>
-{% if result %}
-<h3>目標日期：{{ result.target_date }} 的預測用電量: {{ result.pred_kwh }} kWh</h3>
+    <hr>
+    {% if result %}
+    <h3>
+        目標日期：{{ result.target_date }} 的預測用電量: {{ result.pred_kwh }} kWh
+    </h3>
 
-<h3>歷史最近七天用電量</h3>
-<ul>
-    {% for row in result.last_7_days %}
-    <li>{{ row.date }}: {{ row.kwh }} kWh</li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <h3>歷史最近七天用電量</h3>
+    <ul>
+        {% for row in result.last_7_days %}
+        <li>
+            {{ row.date }}: {{ row.kwh }} kWh -
+            {% if row.is_anomaly %}
+            <span style="color:red;">異常</span>
+            {% else %}
+            <span style="color:green;">正常</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
 </body>
+
 </html>

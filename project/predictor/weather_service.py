@@ -28,6 +28,7 @@ def get_temp_for_date(target_date: datetime):
 
     row = result[result["date"] == target_date.strftime("%Y-%m-%d")]
     if not row.empty:
-        return float(row["temp_avg"])
+        # return float(row["temp_avg"])
+        return float(row["temp_avg"].iloc[0])
     else:
         return 25.0  # fallback
