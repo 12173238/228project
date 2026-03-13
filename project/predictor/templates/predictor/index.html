@@ -4,226 +4,236 @@
 <html>
 
 <head>
-<title>校園電力預測系統</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>校園電力預測系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-body{
-    font-family: "Segoe UI", Arial, sans-serif;
-    background:#eef2f7;
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #eef2f7;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.container{
-    width:1000px;
-    height:90vh; /* 縮短高度，避免滾動 */
-    background:white;
-    border-radius:12px;
-    padding:25px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.12);
-    display:flex;
-    flex-direction:column;
-}
+        .container {
+            width: 1000px;
+            height: 90vh;
+            /* 縮短高度，避免滾動 */
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+        }
 
-h2{
-    text-align:center;
-    margin:0 0 20px 0;
-    font-size:30px; /* 縮小字體 */
-    color:#1e293b;
-}
+        h2 {
+            text-align: center;
+            margin: 0 0 20px 0;
+            font-size: 30px;
+            /* 縮小字體 */
+            color: #1e293b;
+        }
 
-/* 表單區 */
-.form-row{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-bottom:15px;
-}
+        /* 表單區 */
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-.form-row label{
-    font-weight:600;
-    font-size:16px; /* 縮小字體 */
-    color:#1e293b;
-}
+        .form-row label {
+            font-weight: 600;
+            font-size: 16px;
+            /* 縮小字體 */
+            color: #1e293b;
+        }
 
-.form-row input[type="date"]{
-    padding:5px 8px;
-    font-size:16px;
-    border-radius:5px;
-    border:1px solid #ccc;
-}
+        .form-row input[type="date"] {
+            padding: 5px 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-.form-row input[type="checkbox"]{
-    transform:scale(1.1);
-    margin-right:5px;
-}
+        .form-row input[type="checkbox"] {
+            transform: scale(1.1);
+            margin-right: 5px;
+        }
 
-.form-row button{
-    padding:8px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:6px;
-    background:#3b82f6;
-    color:white;
-    cursor:pointer;
-}
+        .form-row button {
+            padding: 8px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+        }
 
-.form-row button:hover{
-    background:#2563eb;
-}
+        .form-row button:hover {
+            background: #2563eb;
+        }
 
-/* 結果 */
-.result{
-    background:#f1f5f9;
-    padding:10px 0;
-    border-radius:8px;
-    text-align:center;
-    margin:15px 0;
-    font-size:18px;
-    color:#1e293b;
-}
+        /* 結果 */
+        .result {
+            background: #f1f5f9;
+            padding: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            color: #1e293b;
+        }
 
-.result b{
-    font-size:24px;
-    color:#3b82f6;
-}
+        .result b {
+            font-size: 24px;
+            color: #3b82f6;
+        }
 
-/* 圖表 + 列表 */
-.data-section{
-    flex:1;
-    display:flex;
-    gap:20px;
-    align-items:stretch;
-}
+        /* 圖表 + 列表 */
+        .data-section {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
 
-.chart-box{
-    flex:2;
-}
+        .chart-box {
+            flex: 2;
+        }
 
-canvas{
-    height:220px !important; /* 調整高度，縮小空間 */
-}
+        canvas {
+            height: 220px !important;
+            /* 調整高度，縮小空間 */
+        }
 
-.list-box{
-    flex:1;
-    font-size:14px;
-    background:#f8fafc;
-    border-radius:8px;
-    padding:10px;
-    overflow:hidden;
-}
+        .list-box {
+            flex: 1;
+            font-size: 14px;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            overflow: hidden;
+        }
 
-.list-box h4{
-    margin-top:0;
-    font-size:16px;
-    color:#1e293b;
-    margin-bottom:8px;
-}
+        .list-box h4 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
 
-ul{
-    margin:0;
-    padding:0;
-    list-style:none;
-}
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
 
-li{
-    padding:4px 0;
-    border-bottom:1px solid #e2e8f0;
-}
+        li {
+            padding: 4px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-.normal{
-    color:#16a34a;
-    font-weight:600;
-}
+        .normal {
+            color: #16a34a;
+            font-weight: 600;
+        }
 
-.anomaly{
-    color:#dc2626;
-    font-weight:600;
-}
-</style>
+        .anomaly {
+            color: #dc2626;
+            font-weight: 600;
+        }
+    </style>
 
 </head>
+
 <body>
 
-<div class="container">
+    <div class="container">
 
-<h2>⚡ 校園電力預測系統</h2>
+        <h2>⚡ 校園電力預測系統</h2>
 
-<form method="POST">
-    {% csrf_token %}
-    <div class="form-row">
-        <div>
-            <label>預測日期</label>
-            <input type="date" name="date" required>
-            <div style="font-size:13px; color:#555; margin-top:2px;">
-                （系統將自動判斷假日與寒暑假狀態）
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <div>
+                    <label>預測日期</label>
+                    <input type="date" name="date" required>
+                    <div style="font-size:16px; color:#555; margin-top:2px;">
+                        (為確保精準度，僅限預測未來 5 天內)
+                    </div>
+                    {% if result and result.error %}
+                    <div style="color:red; font-size:16px; margin-top:2px;">
+                    {{ result.error }}
+            </div>
+        {% endif %}
+                </div>
+
+                <button type="submit">開始預測</button>
+            </div>
+        </form>
+
+        {% if result %}
+
+        <div class="result">
+            📅 {{ result.target_date }}　
+            預測用電量：<b>{{ result.pred_kwh }} kWh</b>
+        </div>
+
+        <div class="data-section">
+            <div class="chart-box">
+                <h4>📈 最近七天用電趨勢</h4>
+                <canvas id="powerChart"></canvas>
+            </div>
+            <div class="list-box">
+                <h4>歷史資料</h4>
+                <ul>
+                    {% for row in result.last_7_days %}
+                    <li>
+                        {{ row.date }}　{{ row.kwh }} kWh -
+                        {% if row.is_anomaly %}
+                        <span class="anomaly">異常</span>
+                        {% else %}
+                        <span class="normal">正常</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-        
-        <button type="submit">開始預測</button>
+
+        {% endif %}
+
     </div>
-</form>
-
-{% if result %}
-
-<div class="result">
-📅 {{ result.target_date }}　
-預測用電量：<b>{{ result.pred_kwh }} kWh</b>
-</div>
-
-<div class="data-section">
-    <div class="chart-box">
-        <h4>📈 最近七天用電趨勢</h4>
-        <canvas id="powerChart"></canvas>
-    </div>
-    <div class="list-box">
-        <h4>歷史資料</h4>
-        <ul>
-        {% for row in result.last_7_days %}
-            <li>
-            {{ row.date }}　{{ row.kwh }} kWh -
-            {% if row.is_anomaly %}
-                <span class="anomaly">異常</span>
-            {% else %}
-                <span class="normal">正常</span>
-            {% endif %}
-            </li>
-        {% endfor %}
-        </ul>
-    </div>
-</div>
-
-{% endif %}
-
-</div>
 
 <script>
 {% if result %}
 let labels = [
-{% for row in result.last_7_days %}
-"{{ row.date }}"{% if not forloop.last %},{% endif %}
-{% endfor %}
+    {% for row in result.last_7_days %}
+    "{{ row.date }}"{% if not forloop.last %}, {% endif %}
+    {% endfor %}
 ];
 
 let data = [
-{% for row in result.last_7_days %}
-{{ row.kwh }}{% if not forloop.last %},{% endif %}
-{% endfor %}
+    {% for row in result.last_7_days %}
+    {{ row.kwh }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
 ];
 
 let anomalyData = [
-{% for row in result.last_7_days %}
-{% if row.is_anomaly %}
-{{ row.kwh }}
-{% else %}
-null
-{% endif %}
-{% if not forloop.last %},{% endif %}
-{% endfor %}
+    {% for row in result.last_7_days %}
+    {% if row.is_anomaly %}
+    {{ row.kwh }}
+    {% else %}
+    null
+    {% endif %}
+    {% if not forloop.last %}, {% endif %}
+    {% endfor %}
 ];
 
 labels.reverse();
@@ -232,33 +242,46 @@ anomalyData.reverse();
 
 const ctx = document.getElementById('powerChart');
 new Chart(ctx, {
-    type:'line',
-    data:{
-        labels:labels,
-        datasets:[
-            {label:'用電量 (kWh)',
-             data:data,
-             borderColor:'#3b82f6',
-             backgroundColor:'rgba(59,130,246,0.2)',
-             fill:true,
-             tension:0.3,
-             pointRadius:5},
-            {label:'異常點',
-             data:anomalyData,
-             borderColor:'red',
-             backgroundColor:'red',
-             pointRadius:7,
-             showLine:false}
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: '用電量 (kWh)',
+                data: data,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.2)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5
+            },
+            {
+                label: '異常點',
+                data: anomalyData,
+                borderColor: 'red',
+                backgroundColor: 'red',
+                pointRadius: 7,
+                showLine: false
+            }
         ]
     },
-    options:{
-        responsive:true,
-        plugins:{legend:{position:'top', labels:{font:{size:14}}}},
-        scales:{x:{ticks:{font:{size:14}}}, y:{beginAtZero:false, ticks:{font:{size:14}}}}
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: { font: { size: 14 } }
+            }
+        },
+        scales: {
+            x: { ticks: { font: { size: 14 } } },
+            y: { beginAtZero: false, ticks: { font: { size: 14 } } }
+        }
     }
 });
 {% endif %}
 </script>
 
 </body>
+
 </html>
