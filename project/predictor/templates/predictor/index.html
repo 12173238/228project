@@ -4,54 +4,269 @@
 <html>
 
 <head>
-    <title>校園電力預測系統</title>
-</head>
+<title>校園電力預測系統</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+body{
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:#eef2f7;
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:1000px;
+    height:90vh; /* 縮短高度，避免滾動 */
+    background:white;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.12);
+    display:flex;
+    flex-direction:column;
+}
+
+h2{
+    text-align:center;
+    margin:0 0 20px 0;
+    font-size:30px; /* 縮小字體 */
+    color:#1e293b;
+}
+
+/* 表單區 */
+.form-row{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.form-row label{
+    font-weight:600;
+    font-size:16px; /* 縮小字體 */
+    color:#1e293b;
+}
+
+.form-row input[type="date"]{
+    padding:5px 8px;
+    font-size:16px;
+    border-radius:5px;
+    border:1px solid #ccc;
+}
+
+.form-row input[type="checkbox"]{
+    transform:scale(1.1);
+    margin-right:5px;
+}
+
+.form-row button{
+    padding:8px 20px;
+    font-size:16px;
+    border:none;
+    border-radius:6px;
+    background:#3b82f6;
+    color:white;
+    cursor:pointer;
+}
+
+.form-row button:hover{
+    background:#2563eb;
+}
+
+/* 結果 */
+.result{
+    background:#f1f5f9;
+    padding:10px 0;
+    border-radius:8px;
+    text-align:center;
+    margin:15px 0;
+    font-size:18px;
+    color:#1e293b;
+}
+
+.result b{
+    font-size:24px;
+    color:#3b82f6;
+}
+
+/* 圖表 + 列表 */
+.data-section{
+    flex:1;
+    display:flex;
+    gap:20px;
+    align-items:stretch;
+}
+
+.chart-box{
+    flex:2;
+}
+
+canvas{
+    height:220px !important; /* 調整高度，縮小空間 */
+}
+
+.list-box{
+    flex:1;
+    font-size:14px;
+    background:#f8fafc;
+    border-radius:8px;
+    padding:10px;
+    overflow:hidden;
+}
+
+.list-box h4{
+    margin-top:0;
+    font-size:16px;
+    color:#1e293b;
+    margin-bottom:8px;
+}
+
+ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
+li{
+    padding:4px 0;
+    border-bottom:1px solid #e2e8f0;
+}
+
+.normal{
+    color:#16a34a;
+    font-weight:600;
+}
+
+.anomaly{
+    color:#dc2626;
+    font-weight:600;
+}
+</style>
+
+</head>
 <body>
 
-    <h2>校園電力預測系統</h2>
+<div class="container">
 
-    <form method="POST">
-        {% csrf_token %}
+<h2>⚡ 校園電力預測系統</h2>
 
-        <p>預測日期（未來五天內）：</p>
+<form method="POST">
+{% csrf_token %}
+
+<div class="form-row">
+
+    <div>
+        <label>預測日期</label>
         <input type="date" name="date" required>
+        <div style="font-size:13px; color:#555; margin-top:2px;">
+            （為確保預測準確度，僅支援未來五天內）
+        </div>
+    </div>
 
-        <p>
-            是否放假(不包括寒暑假、周六、周日)：
-            <input type="checkbox" name="is_holiday">
-        </p>
+    <div style="display:flex; gap:15px; font-size:16px;">
+        <label><input type="checkbox" name="is_holiday"> 是否放假（不包含周六、周日及寒暑假）</label>
+        <label><input type="checkbox" name="is_vacation"> 是否寒暑假</label>
+    </div>
 
-        <p>
-            是否寒暑假：
-            <input type="checkbox" name="is_vacation">
-        </p>
+    <button type="submit">開始預測</button>
 
-        <br>
-        <button type="submit">開始預測</button>
-    </form>
+</div>
+</form>
 
-    <hr>
-    {% if result %}
-    <h3>
-        目標日期：{{ result.target_date }} 的預測用電量: {{ result.pred_kwh }} kWh
-    </h3>
+{% if result %}
 
-    <h3>歷史最近七天用電量</h3>
-    <ul>
+<div class="result">
+📅 {{ result.target_date }}　
+預測用電量：<b>{{ result.pred_kwh }} kWh</b>
+</div>
+
+<div class="data-section">
+    <div class="chart-box">
+        <h4>📈 最近七天用電趨勢</h4>
+        <canvas id="powerChart"></canvas>
+    </div>
+    <div class="list-box">
+        <h4>歷史資料</h4>
+        <ul>
         {% for row in result.last_7_days %}
-        <li>
-            {{ row.date }}: {{ row.kwh }} kWh -
+            <li>
+            {{ row.date }}　{{ row.kwh }} kWh -
             {% if row.is_anomaly %}
-            <span style="color:red;">異常</span>
+                <span class="anomaly">異常</span>
             {% else %}
-            <span style="color:green;">正常</span>
+                <span class="normal">正常</span>
             {% endif %}
-        </li>
+            </li>
         {% endfor %}
-    </ul>
-    {% endif %}
+        </ul>
+    </div>
+</div>
+
+{% endif %}
+
+</div>
+
+<script>
+{% if result %}
+let labels = [
+{% for row in result.last_7_days %}
+"{{ row.date }}"{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+
+let data = [
+{% for row in result.last_7_days %}
+{{ row.kwh }}{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+
+let anomalyData = [
+{% for row in result.last_7_days %}
+{% if row.is_anomaly %}
+{{ row.kwh }}
+{% else %}
+null
+{% endif %}
+{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+
+labels.reverse();
+data.reverse();
+anomalyData.reverse();
+
+const ctx = document.getElementById('powerChart');
+new Chart(ctx, {
+    type:'line',
+    data:{
+        labels:labels,
+        datasets:[
+            {label:'用電量 (kWh)',
+             data:data,
+             borderColor:'#3b82f6',
+             backgroundColor:'rgba(59,130,246,0.2)',
+             fill:true,
+             tension:0.3,
+             pointRadius:5},
+            {label:'異常點',
+             data:anomalyData,
+             borderColor:'red',
+             backgroundColor:'red',
+             pointRadius:7,
+             showLine:false}
+        ]
+    },
+    options:{
+        responsive:true,
+        plugins:{legend:{position:'top', labels:{font:{size:14}}}},
+        scales:{x:{ticks:{font:{size:14}}}, y:{beginAtZero:false, ticks:{font:{size:14}}}}
+    }
+});
+{% endif %}
+</script>
 
 </body>
-
 </html>
